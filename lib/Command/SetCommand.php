@@ -96,7 +96,7 @@ class SetCommand extends Base {
 
 		$permissions = $this->parsePermissions($input->getArgument('permissions'));
 		if ($permissions === null) {
-			$output->writeln("<error>Invalid permission input, provide either ALL, READONLY or NONE</error>");
+			$output->writeln('<error>Invalid permission input, provide either ALL, READONLY or NONE</error>');
 
 			return -1;
 		}
