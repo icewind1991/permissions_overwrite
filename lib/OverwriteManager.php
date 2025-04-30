@@ -28,7 +28,7 @@ use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
 
 class OverwriteManager {
-	private $connection;
+	private IDBConnection $connection;
 
 	public function __construct(IDBConnection $connection) {
 		$this->connection = $connection;
@@ -41,7 +41,7 @@ class OverwriteManager {
 			->from('permissions_overwrite')
 			->where($query->expr()->eq('mount_id', $query->createNamedParameter($mountId, IQueryBuilder::PARAM_INT)))
 			->andWhere($query->expr()->eq('path_hash', $query->createNamedParameter(md5($path))));
-		$permissions = $query->execute()->fetchColumn();
+		$permissions = $query->executeQuery()->fetchColumn();
 		return $permissions === false ? null : (int)$permissions;
 	}
 
@@ -51,7 +51,7 @@ class OverwriteManager {
 		$query->select('path', 'permissions')
 			->from('permissions_overwrite')
 			->where($query->expr()->eq('mount_id', $query->createNamedParameter($mountId, IQueryBuilder::PARAM_INT)));
-		$overwrites = array_column($query->execute()->fetchAll(\PDO::FETCH_NUM), 1, 0);
+		$overwrites = array_column($query->executeQuery()->fetchAll(\PDO::FETCH_NUM), 1, 0);
 		return array_map(function ($permission) {
 			return (int)$permission;
 		}, $overwrites);
@@ -68,7 +68,7 @@ class OverwriteManager {
 					'path_hash' => $query->createNamedParameter(md5($path)),
 					'permissions' => $query->createNamedParameter($permissions, IQueryBuilder::PARAM_INT),
 				]);
-			$query->execute();
+			$query->executeStatement();
 		} catch (UniqueConstraintViolationException $e) {
 			$query = $this->connection->getQueryBuilder();
 
@@ -76,7 +76,7 @@ class OverwriteManager {
 				->set('permissions', $query->createNamedParameter($permissions, IQueryBuilder::PARAM_INT))
 				->where($query->expr()->eq('mount_id', $query->createNamedParameter($mountId, IQueryBuilder::PARAM_INT)))
 				->andWhere($query->expr()->eq('path_hash', $query->createNamedParameter(md5($path))));
-			$query->execute();
+			$query->executeStatement();
 		}
 	}
 
@@ -86,7 +86,7 @@ class OverwriteManager {
 		$query->delete('permissions_overwrite')
 			->where($query->expr()->eq('mount_id', $query->createNamedParameter($mountId, IQueryBuilder::PARAM_INT)))
 			->andWhere($query->expr()->eq('path_hash', $query->createNamedParameter(md5($path))));
-		$query->execute();
+		$query->executeStatement();
 	}
 
 	public function getAll(): array {
@@ -95,7 +95,7 @@ class OverwriteManager {
 		$query->select('mount_id', 'path', 'permissions')
 			->from('permissions_overwrite');
 
-		$result = $query->execute();
+		$result = $query->executeQuery();
 
 		$mounts = [];
 		while ($row = $result->fetch()) {
