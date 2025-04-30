@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace OCA\PermissionsOverwrite;
 
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use OCP\DB\Exception;
 use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
 
@@ -69,7 +70,10 @@ class OverwriteManager {
 					'permissions' => $query->createNamedParameter($permissions, IQueryBuilder::PARAM_INT),
 				]);
 			$query->executeStatement();
-		} catch (UniqueConstraintViolationException $e) {
+		} catch (Exception|UniqueConstraintViolationException $e) {
+			if (!$e->getPrevious() instanceof UniqueConstraintViolationException) {
+				throw $e;
+			}
 			$query = $this->connection->getQueryBuilder();
 
 			$query->update('permissions_overwrite')
