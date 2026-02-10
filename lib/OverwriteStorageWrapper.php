@@ -25,17 +25,18 @@ namespace OCA\PermissionsOverwrite;
 
 use OC\Files\Storage\Wrapper\Wrapper;
 use OCP\Constants;
+use OCP\Files\Cache\ICache;
+use OCP\Files\Storage\IStorage;
 
 class OverwriteStorageWrapper extends Wrapper {
-	/** @var OverwriteSet */
-	private $overwrites;
+	private OverwriteSet $overwrites;
 
-	public function __construct($parameters) {
+	public function __construct(array $parameters) {
 		parent::__construct($parameters);
 		$this->overwrites = $parameters['overwrites'];
 	}
 
-	public function getPermissions($path) {
+	public function getPermissions(string $path): int {
 		$overwrite = $this->overwrites->getOverwriteForPath($path);
 		if ($overwrite !== null) {
 			return $overwrite;
@@ -44,27 +45,27 @@ class OverwriteStorageWrapper extends Wrapper {
 		return parent::getPermissions($path);
 	}
 
-	public function isReadable($path) {
+	public function isReadable(string $path): bool {
 		return ($this->getPermissions($path) & Constants::PERMISSION_READ) > 0;
 	}
 
-	public function isCreatable($path) {
+	public function isCreatable(string $path): bool {
 		return ($this->getPermissions($path) & Constants::PERMISSION_CREATE) > 0;
 	}
 
-	public function isUpdatable($path) {
+	public function isUpdatable(string $path): bool {
 		return ($this->getPermissions($path) & Constants::PERMISSION_UPDATE) > 0;
 	}
 
-	public function isDeletable($path) {
+	public function isDeletable(string $path): bool {
 		return ($this->getPermissions($path) & Constants::PERMISSION_DELETE) > 0;
 	}
 
-	public function isSharable($path) {
+	public function isSharable(string $path): bool {
 		return ($this->getPermissions($path) & Constants::PERMISSION_SHARE) > 0;
 	}
 
-	public function getMetaData($path) {
+	public function getMetaData(string $path): ?array {
 		$data = parent::getMetaData($path);
 
 		if ($data && isset($data['permissions'])) {
@@ -77,7 +78,7 @@ class OverwriteStorageWrapper extends Wrapper {
 		return $data;
 	}
 
-	public function getCache($path = '', $storage = null) {
+	public function getCache(string $path = '', ?IStorage $storage = null): ICache {
 		if (!$storage) {
 			$storage = $this;
 		}
