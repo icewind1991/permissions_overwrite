@@ -29,10 +29,9 @@ use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
 
 class OverwriteManager {
-	private IDBConnection $connection;
-
-	public function __construct(IDBConnection $connection) {
-		$this->connection = $connection;
+	public function __construct(
+		private readonly IDBConnection $connection,
+	) {
 	}
 
 	public function getOverwrite(int $mountId, string $path): ?int {
@@ -58,7 +57,7 @@ class OverwriteManager {
 		}, $overwrites);
 	}
 
-	public function setOverwrite(int $mountId, string $path, int $permissions) {
+	public function setOverwrite(int $mountId, string $path, int $permissions): void {
 		$query = $this->connection->getQueryBuilder();
 
 		try {
@@ -84,7 +83,7 @@ class OverwriteManager {
 		}
 	}
 
-	public function removeOverwrite(int $mountId, string $path) {
+	public function removeOverwrite(int $mountId, string $path): void {
 		$query = $this->connection->getQueryBuilder();
 
 		$query->delete('permissions_overwrite')

@@ -30,10 +30,5 @@
 				<referencedClass name="OC\Files\Storage\Wrapper\Wrapper" />
 			</errorLevel>
 		</UndefinedClass>
-		<UndefinedDocblockClass>
-			<errorLevel type="suppress">
-				<referencedClass name="OCA\Files_External\Service\UserGlobalStoragesService" />
-			</errorLevel>
-		</UndefinedDocblockClass>
 	</issueHandlers>
 </psalm>

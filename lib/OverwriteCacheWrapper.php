@@ -27,11 +27,11 @@ use OC\Files\Cache\Wrapper\CacheWrapper;
 use OCP\Files\Cache\ICache;
 
 class OverwriteCacheWrapper extends CacheWrapper {
-	protected $overwrites;
-
-	public function __construct(ICache $cache, OverwriteSet $overwrites) {
+	public function __construct(
+		ICache $cache,
+		protected readonly OverwriteSet $overwrites,
+	) {
 		parent::__construct($cache);
-		$this->overwrites = $overwrites;
 	}
 
 	protected function formatCacheEntry($entry) {
