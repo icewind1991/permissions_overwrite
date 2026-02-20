@@ -34,16 +34,14 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class SetCommand extends Base {
-	private $overwriteManager;
-	private $storagesService;
-
-	public function __construct(OverwriteManager $overwriteManager, GlobalStoragesService $storagesService) {
+	public function __construct(
+		private readonly OverwriteManager $overwriteManager,
+		private readonly GlobalStoragesService $storagesService,
+	) {
 		parent::__construct();
-		$this->overwriteManager = $overwriteManager;
-		$this->storagesService = $storagesService;
 	}
 
-	protected function configure() {
+	protected function configure(): void {
 		$this
 			->setName('permissions_overwrite:set')
 			->setDescription('Set a permission overwrite')
@@ -80,7 +78,7 @@ class SetCommand extends Base {
 		}
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$mountId = (int)$input->getArgument('mount_id');
 
 		try {

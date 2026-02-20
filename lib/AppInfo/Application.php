@@ -23,19 +23,12 @@ declare(strict_types=1);
 
 namespace OCA\PermissionsOverwrite\AppInfo;
 
-use OC\Files\Filesystem;
-use OC\Files\Storage\Storage;
-use OCA\Files_External\Lib\PersonalMount;
-use OCA\Files_External\Service\UserGlobalStoragesService;
-use OCA\PermissionsOverwrite\OverwriteManager;
-use OCA\PermissionsOverwrite\OverwriteSet;
-use OCA\PermissionsOverwrite\OverwriteStorageWrapper;
+use OCA\PermissionsOverwrite\Listener\FilesystemSetupListener;
 use OCP\AppFramework\App;
 use OCP\AppFramework\Bootstrap\IBootContext;
 use OCP\AppFramework\Bootstrap\IBootstrap;
 use OCP\AppFramework\Bootstrap\IRegistrationContext;
-use OCP\Files\Mount\IMountPoint;
-use OCP\IUserSession;
+use OCP\Files\Events\BeforeFileSystemSetupEvent;
 
 class Application extends App implements IBootstrap {
 	public const APP_ID = 'permissions_overwrite';
@@ -45,50 +38,9 @@ class Application extends App implements IBootstrap {
 	}
 
 	public function register(IRegistrationContext $context): void {
+		$context->registerEventListener(BeforeFileSystemSetupEvent::class, FilesystemSetupListener::class);
 	}
 
 	public function boot(IBootContext $context): void {
-		\OCP\Util::connectHook('OC_Filesystem', 'preSetup', $this, 'setupStorageWrapper');
-	}
-
-	private function getMountIdForMountpoint(string $mountPoint): ?int {
-		/** @var UserGlobalStoragesService $storageService */
-		$storageService = $this->getContainer()->query(UserGlobalStoragesService::class);
-		/** @var IUserSession $userSession */
-		$userSession = $this->getContainer()->query(IUserSession::class);
-		$user = $userSession->getUser();
-		if ($user === null) {
-			return null;
-		}
-		foreach ($storageService->getAllStoragesForUser($user) as $storageConfig) {
-			$storageMountPoint = rtrim('/' . $user->getUID() . '/files' . $storageConfig->getMountPoint()) . '/';
-			if ($storageMountPoint === $mountPoint) {
-				return $storageConfig->getId();
-			}
-		}
-
-		return null;
-	}
-
-	public function setupStorageWrapper() {
-		Filesystem::addStorageWrapper('permissions_overwrite', function (string $mountPoint, Storage $storage, IMountPoint $mount) {
-			$mountId = $mount->getMountId();
-			// work around mount id not being set on personal mounts
-			if ($mountId === null && $mount instanceof PersonalMount) {
-				$mountId = $this->getMountIdForMountpoint($mount->getMountPoint());
-			}
-
-			if ($mountId) {
-				/** @var OverwriteManager $manager */
-				$manager = $this->getContainer()->query(OverwriteManager::class);
-				$overwrites = new OverwriteSet($manager->getOverwritesForMount($mountId));
-				return new OverwriteStorageWrapper([
-					'storage' => $storage,
-					'overwrites' => $overwrites,
-				]);
-			} else {
-				return $storage;
-			}
-		});
 	}
 }

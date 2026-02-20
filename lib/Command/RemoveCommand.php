@@ -31,14 +31,13 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class RemoveCommand extends Base {
-	private $overwriteManager;
-
-	public function __construct(OverwriteManager $overwriteManager) {
+	public function __construct(
+		private readonly OverwriteManager $overwriteManager,
+	) {
 		parent::__construct();
-		$this->overwriteManager = $overwriteManager;
 	}
 
-	protected function configure() {
+	protected function configure(): void {
 		$this
 			->setName('permissions_overwrite:remove')
 			->setDescription('Remove a configured overwrite')
@@ -54,7 +53,7 @@ class RemoveCommand extends Base {
 		parent::configure();
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$mountId = (int)$input->getArgument('mount_id');
 
 		$path = Filesystem::normalizePath($input->getArgument('path'));

@@ -30,22 +30,21 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class ListCommand extends Base {
-	private $overwriteManager;
-
-	public function __construct(OverwriteManager $overwriteManager) {
+	public function __construct(
+		private readonly OverwriteManager $overwriteManager,
+	) {
 		parent::__construct();
-		$this->overwriteManager = $overwriteManager;
 	}
 
 
-	protected function configure() {
+	protected function configure(): void {
 		$this
 			->setName('permissions_overwrite:list')
 			->setDescription('List all configured overwrites');
 		parent::configure();
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$overwrites = $this->overwriteManager->getAll();
 
 		$overwrites = array_map(function ($pathPermissions) {

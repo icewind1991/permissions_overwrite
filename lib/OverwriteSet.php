@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace OCA\PermissionsOverwrite;
 
 class OverwriteSet {
-	private $overwrites;
+	private array $overwrites;
 
 	public function __construct(array $overwrites) {
 		$paths = array_keys($overwrites);
@@ -45,7 +45,7 @@ class OverwriteSet {
 
 		// note that because the overwrites are sorted by path, later matching iterations are always subfolders of the previous match
 		foreach ($this->overwrites as $overwritePath => $permission) {
-			if ($overwritePath === '/' || strpos($path, $overwritePath) === 0) {
+			if ($overwritePath === '/' || str_starts_with($path, $overwritePath)) {
 				$overwrite = $permission;
 			}
 		}
