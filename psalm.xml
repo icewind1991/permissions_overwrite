@@ -19,16 +19,21 @@
 	<extraFiles>
 		<directory name="vendor/nextcloud/ocp"/>
 	</extraFiles>
-	<issueHandlers>
-		<UndefinedClass>
-			<errorLevel type="suppress">
-				<referencedClass name="OC" />
-				<referencedClass name="OCA\Files_External\Service\UserGlobalStoragesService" />
-				<referencedClass name="OC\Core\Command\Base" />
-				<referencedClass name="OC\Files\Cache\Wrapper\CacheWrapper" />
-				<referencedClass name="OC\Files\Filesystem" />
-				<referencedClass name="OC\Files\Storage\Wrapper\Wrapper" />
-			</errorLevel>
-		</UndefinedClass>
-	</issueHandlers>
+	<stubs>
+		<file name="tests/stubs/oca_files_external_notfoundexception.php" preloadClasses="true"/>
+		<file name="tests/stubs/oca_files_external_service_storagesservice.php" preloadClasses="true"/>
+		<file name="tests/stubs/oca_files_external_service_globalstoragesservice.php" preloadClasses="true"/>
+		<file name="tests/stubs/oca_files_external_service_userglobalstoragesservice.php" preloadClasses="true"/>
+		<file name="tests/stubs/oca_files_external_lib_personalmount.php" preloadClasses="true"/>
+		<file name="tests/stubs/oca_files_external_lib_storageconfig.php" preloadClasses="true"/>
+		<file name="tests/stubs/oca_files_external_config_externalmountpoint.php" preloadClasses="true"/>
+		<file name="tests/stubs/oc_core_command_base.php" preloadClasses="true"/>
+		<file name="tests/stubs/oc_files_cache_cache.php" preloadClasses="true"/>
+		<file name="tests/stubs/oc_files_cache_wrapper_cachewrapper.php" preloadClasses="true"/>
+		<file name="tests/stubs/oc_files_filesystem.php" preloadClasses="true"/>
+		<file name="tests/stubs/oc_files_mount_mountpoint.php" preloadClasses="true"/>
+		<file name="tests/stubs/oc_files_storage_wrapper_wrapper.php" preloadClasses="true"/>
+		<file name="tests/stubs/oc_files_storage_storage.php" preloadClasses="true"/>
+		<file name="tests/stubs/stecman_component_symfony_console_bashcompletion_completion_completionawareinterface.php" preloadClasses="true" />
+	</stubs>
 </psalm>
